@@ -1,0 +1,26 @@
+{
+  "name": "zk-crypto-lab",
+  "version": "1.0.0",
+  "description": "Interactive Zero-Knowledge Proofs (ZK-SNARK/R1CS), Post-Quantum Lattice Cryptography & Elliptic Curves",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && cp index.html dist/index.html && sed -i 's|./src/main.ts|./src/main.js|g' dist/index.html",
+    "test": "tsc && node --test dist/tests/all.test.js"
+  },
+  "keywords": [
+    "cryptography",
+    "zero-knowledge-proofs",
+    "zk-snarks",
+    "r1cs",
+    "post-quantum",
+    "kyber",
+    "elliptic-curves",
+    "ecdh"
+  ],
+  "author": "Argus Kern <argus.kern@delos-beta.dls.so>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "typescript": "^5.4.5"
+  }
+}

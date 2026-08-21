@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZK Crypto Lab | Zero-Knowledge Proofs & Post-Quantum Cryptography</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07090e;
+      --panel: #0d121d;
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --accent: #1d9996;
+      --accent-glow: rgba(29, 153, 150, 0.35);
+      --accent-light: #38efeb;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --card-bg: rgba(255, 255, 255, 0.02);
+      --success: #10b981;
+      --error: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: rgba(13, 18, 29, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(29, 153, 150, 0.15);
+      border: 1px solid rgba(29, 153, 150, 0.3);
+      border-radius: 20px;
+      color: var(--accent-light);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-dot {
+      width: 6px; height: 6px; background: var(--accent-light); border-radius: 50%; box-shadow: 0 0 8px var(--accent-light);
+    }
+    h1 { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -0.5px; }
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+    }
+    .nav-btn {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-btn.active {
+      background: var(--accent);
+      color: #030712;
+      border-color: var(--accent-light);
+      font-weight: 700;
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+    main {
+      flex: 1;
+      padding: 32px;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .view-panel {
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .view-panel.active { display: flex; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .code-block {
+      background: #030712;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #38efeb;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    input[type="text"], input[type="number"], select {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .btn {
+      padding: 10px 18px;
+      background: var(--accent);
+      color: #030712;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:hover {
+      background: var(--accent-light);
+      box-shadow: 0 0 16px var(--accent-glow);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--panel-border);
+      color: var(--text);
+    }
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--accent);
+    }
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .status-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+    table.matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+    table.matrix-table th, table.matrix-table td {
+      border: 1px solid var(--panel-border);
+      padding: 8px;
+      text-align: center;
+    }
+    table.matrix-table th { background: rgba(255,255,255,0.02); color: var(--text-muted); }
+    canvas.plot-canvas {
+      width: 100%;
+      height: 240px;
+      background: #030712;
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+    }
+    footer {
+      padding: 20px 32px;
+      border-top: 1px solid var(--panel-border);
+      background: var(--panel);
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    footer a { color: var(--accent-light); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo-group">
+      <div class="badge"><span class="badge-dot"></span> Domain 3 • Cryptography</div>
+      <h1>ZK Crypto Lab</h1>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-btn active" data-view="r1cs">1. ZK-SNARK R1CS Circuit</button>
+      <button class="nav-btn" data-view="schnorr">2. Schnorr ZK Protocol</button>
+      <button class="nav-btn" data-view="kyber">3. Post-Quantum ML-KEM</button>
+      <button class="nav-btn" data-view="ecc">4. Elliptic Curves & ECDH</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- View 1: R1CS Arithmetic Circuit -->
+    <div class="view-panel active" id="view-r1cs">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>Arithmetic Circuit Definition</span>
+            <span class="status-badge status-success" id="r1cs-status">CONSTRAINTS SATISFIED</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            Prover proves knowledge of secret input <code>x</code> satisfying polynomial <code>x³ + x + 5 = Output</code> without revealing <code>x</code>.
+          </p>
+          <div class="input-group">
+            <label class="input-label">Secret Witness Input (x)</label>
+            <input type="number" id="r1cs-x-input" value="3" />
+          </div>
+          <div class="input-group">
+            <label class="input-label">Public Target Output</label>
+            <input type="number" id="r1cs-out-input" value="35" readonly />
+          </div>
+          <div class="code-block" id="r1cs-witness-display">
+Witness Vector w = [ 1, 35, 3, 9, 27 ]
+(1, out, x, sym1=x², sym2=x³)
+          </div>
+          <button class="btn" id="r1cs-verify-btn">Compile & Verify Constraints</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">R1CS Constraint Matrices (A • w) ∘ (B • w) = C • w</div>
+          <table class="matrix-table" id="r1cs-table">
+            <thead>
+              <tr><th>Constraint</th><th>A • w</th><th>B • w</th><th>(A•w)(B•w)</th><th>C • w</th><th>Status</th></tr>
+            </thead>
+            <tbody id="r1cs-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+          <p style="font-size: 11px; color: var(--text-muted); line-height: 1.4;">
+            Every non-linear computation is transformed into a quadratic constraint. In zk-SNARKs, these matrices are converted into Quadratic Arithmetic Programs (QAP) evaluated on elliptic curve pairings.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- View 2: Schnorr ZKP -->
+    <div class="view-panel" id="view-schnorr">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>Schnorr Sigma Identification Protocol</span>
+            <span class="status-badge status-success" id="schnorr-status">PROOF VALID</span>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Prover Secret Exponent (x)</label>
+            <input type="text" id="schnorr-secret" value="123456789" />
+          </div>
+          <div class="input-group">
+            <label class="input-label">Public Key y = g^x (mod p)</label>
+            <input type="text" id="schnorr-pk" readonly />
+          </div>
+          <div class="input-group">
+            <label class="input-label">Challenge Message</label>
+            <input type="text" id="schnorr-msg" value="AuthSession_Maria_Argus" />
+          </div>
+          <div style="display: flex; gap: 12px;">
+            <button class="btn" id="schnorr-run-btn">Generate & Verify Proof</button>
+            <button class="btn btn-outline" id="schnorr-tamper-btn">Simulate Forgery</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Interactive Exchange Transcript</div>
+          <div class="code-block" id="schnorr-transcript" style="height: 280px;">
+1. Prover picks random nonce r
+2. Commitment: t = g^r mod p
+3. Challenge (Fiat-Shamir): c = Hash(g, y, t, msg)
+4. Response: s = (r + c * x) mod (p - 1)
+5. Verifier checks: g^s == t * y^c mod p
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View 3: Post-Quantum ML-KEM -->
+    <div class="view-panel" id="view-kyber">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>ML-KEM (Kyber) Module-LWE Key Encapsulation</span>
+            <span class="status-badge status-success" id="kyber-status">DEC_SUCCESS</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            NIST FIPS 203 Post-Quantum Standard: Polynomial Ring R_q = Z_3329[X] / (X²⁵⁶ + 1). Hardness based on Module Learning With Errors (M-LWE).
+          </p>
+          <div class="input-group">
+            <label class="input-label">Message Secret Bit</label>
+            <select id="kyber-msg-select">
+              <option value="1">Bit 1 (Encoded as q/2 ≈ 1665)</option>
+              <option value="0">Bit 0 (Encoded as 0)</option>
+            </select>
+          </div>
+          <button class="btn" id="kyber-run-btn">Run KeyGen, Encapsulate & Decapsulate</button>
+          <div class="code-block" id="kyber-log">
+Ready to run ML-KEM encapsulation cycle...
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Lattice Polynomial Noise Distribution (Centered Binomial)</div>
+          <canvas class="plot-canvas" id="kyber-canvas"></canvas>
+          <p style="font-size: 11px; color: var(--text-muted);">
+            Noise vectors e, s are sampled from Centered Binomial Distribution (η=2) ensuring quantum-resistant shortest vector problem (SVP) hardness while enabling correct error-correcting decapsulation.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- View 4: Elliptic Curves -->
+    <div class="view-panel" id="view-ecc">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span>Weierstrass Curve & ECDH Key Agreement</span>
+            <span class="status-badge status-success" id="ecdh-status">SHARED SECRET MATCH</span>
+          </div>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            Elliptic Curve: <code>y² ≡ x³ + 7 (mod 17)</code> with Generator <code>G = (2, 7)</code>.
+          </p>
+          <div class="input-group">
+            <label class="input-label">Alice Private Key (a)</label>
+            <input type="number" id="ecc-alice-key" value="3" min="1" max="16" />
+          </div>
+          <div class="input-group">
+            <label class="input-label">Bob Private Key (b)</label>
+            <input type="number" id="ecc-bob-key" value="5" min="1" max="16" />
+          </div>
+          <button class="btn" id="ecc-run-btn">Compute ECDH Shared Secret</button>
+          <div class="code-block" id="ecc-log">
+Computing curve arithmetic...
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Finite Field Affine Plane Visualization</div>
+          <canvas class="plot-canvas" id="ecc-canvas"></canvas>
+          <p style="font-size: 11px; color: var(--text-muted);">
+            Points (x, y) satisfying the Weierstrass cubic equation over prime field F_17. Green highlight indicates Generator G and ECDH derived points.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <span>Argus Kern • Delos Software Engineer</span>
+    <a href="https://github.com/arguskern/zk-crypto-lab" target="_blank">GitHub Repo →</a>
+  </footer>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
