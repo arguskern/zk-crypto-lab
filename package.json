@@ -4,7 +4,7 @@
   "description": "Interactive Zero-Knowledge Proofs (ZK-SNARK/R1CS), Post-Quantum Lattice Cryptography & Elliptic Curves",
   "type": "module",
   "scripts": {
-    "build": "tsc && cp index.html dist/index.html && sed -i 's|./src/main.ts|./src/main.js|g' dist/index.html",
+    "build": "tsc && cp index.html dist/index.html && cp favicon.svg favicon.png dist/ && sed -i 's|./src/main.ts|./src/main.js|g' dist/index.html",
     "test": "tsc && node --test dist/tests/all.test.js"
   },
   "keywords": [
